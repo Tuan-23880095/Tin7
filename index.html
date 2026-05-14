@@ -3,662 +3,784 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ôn Tập Tin Học 7 - Bảng Tính Điện Tử</title>
+    <title>Đánh Giá Chéo Báo Cáo KNLVN - Sinh Viên</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Roboto', sans-serif; background-color: #f0fdf4; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         
-        :root {
-            --primary-color: #15803d; /* Green 700 */
-            --secondary-color: #0ea5e9; /* Sky 500 */
-        }
+        /* Custom Checkbox as pill buttons */
+        .check-pill input:checked + div.positive { background-color: #10b981; color: white; border-color: #10b981; }
+        .check-pill input:checked + div.negative { background-color: #ef4444; color: white; border-color: #ef4444; }
+        .check-pill input:checked + div.neutral { background-color: #3b82f6; color: white; border-color: #3b82f6; }
+        
+        .smooth-scroll { scroll-behavior: smooth; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
 
-        .header-gradient { background: linear-gradient(to right, #ffffff, #dcfce7); }
-        .text-primary { color: var(--primary-color); }
-        .bg-primary { background-color: var(--primary-color); }
-        
-        /* Drag and Drop Styles */
-        .draggable-item {
-            cursor: grab;
-            transition: all 0.2s;
-            touch-action: none;
-        }
-        .draggable-item:active { cursor: grabbing; transform: scale(1.05); }
-        .draggable-item.dragging { opacity: 0.5; }
-        
-        .drop-zone {
-            display: inline-block;
-            min-width: 100px;
-            min-height: 30px;
-            border-bottom: 2px dashed var(--primary-color);
-            background-color: #f0fdfa;
-            vertical-align: middle;
-            margin: 0 5px;
-            text-align: center;
-            color: var(--primary-color);
-            font-weight: bold;
-            padding: 2px 8px;
-        }
-        .drop-zone.over { background-color: #bbf7d0; border-color: #166534; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #86efac; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4ade80; }
+        /* Tabs styling */
+        .tab-btn { border-bottom: 2px solid transparent; transition: all 0.3s ease; }
+        .tab-btn.active { border-bottom: 2px solid #2563eb; color: #1e3a8a; font-weight: 600; background-color: #eff6ff; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="text-gray-800 antialiased min-h-screen flex flex-col">
 
-    <!-- Header -->
-    <header class="header-gradient shadow-md border-b-4 border-green-600 sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto px-4 py-3">
-            <div class="flex items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="text-green-700 text-4xl"><i class="fas fa-file-excel"></i></div>
-                    <div class="hidden md:block w-px h-12 bg-gray-300"></div>
-                    <div>
-                        <h2 class="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wide">Môn Tin Học - Lớp 7</h2>
-                        <h1 class="text-lg md:text-2xl font-bold text-primary">LÀM QUEN BẢNG TÍNH</h1>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="flex items-center justify-end gap-2 text-xl font-bold text-orange-600 bg-white px-3 py-1 rounded shadow-sm border border-orange-200">
-                        <i class="fas fa-clock"></i> <span id="timer">45:00</span>
-                    </div>
+    <header class="bg-blue-800 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-users-cog text-2xl"></i>
+                <div>
+                    <h1 class="font-bold text-lg md:text-xl">Đánh Giá Chéo Báo Cáo (BAA0008)</h1>
+                    <p class="text-xs text-blue-200">Công cụ nhận xét, chấm điểm và phản biện dành cho Sinh viên</p>
                 </div>
             </div>
+            <button onclick="resetAll()" class="bg-blue-700 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                <i class="fas fa-redo"></i> Đánh giá nhóm khác
+            </button>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow max-w-5xl mx-auto w-full p-4 pb-12">
+    <main class="flex-grow max-w-7xl mx-auto w-full p-4 grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
         
-        <!-- Student Info Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-green-200 p-6 mb-6">
-            <h3 class="text-lg font-bold text-primary mb-4 border-b pb-2"><i class="fas fa-user-graduate mr-2"></i>Thông tin học sinh</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Họ và tên <span class="text-red-500">*</span></label>
-                    <input type="text" id="studentName" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 outline-none" placeholder="Nhập họ tên em...">
+        <div class="lg:col-span-8 space-y-6 pb-20">
+            
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                    <h2 class="font-semibold text-lg border-b pb-2 mb-4 text-gray-700">
+                        <i class="fas fa-info-circle mr-2 text-blue-500"></i>Thông Tin Phiếu Đánh Giá
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
+                        <div class="md:col-span-12 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                            <label class="block text-sm font-semibold text-blue-800 mb-1">Họ Tên / MSSV của bạn (Người đánh giá) <span class="text-red-500">*</span></label>
+                            <input type="text" id="evaluatorName" placeholder="Nhập MSSV - Họ và tên của bạn..." class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        </div>
+                
+                        <div class="md:col-span-12">
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Chủ đề / Đề tài nhóm báo cáo</label>
+                            <textarea 
+                                id="topicName" 
+                                placeholder="Tên dự án..." 
+                                rows="1"
+                                oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"
+                                class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none overflow-y-hidden min-h-[50px]"
+                            ></textarea>
+                        </div>
+                
+                        <div class="md:col-span-6">
+                            <label class="block text-xs font-medium text-blue-600 mb-1 font-bold">1. Lớp học</label>
+                            <select id="classSelect" class="w-full border border-blue-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-blue-50 cursor-pointer" onchange="onClassChange()">
+                                <option value="">-- Chọn Lớp --</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-6">
+                            <label class="block text-xs font-medium text-blue-600 mb-1 font-bold">2. Nhóm đang báo cáo</label>
+                            <select id="groupSelect" class="w-full border border-blue-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-blue-50 cursor-pointer disabled:opacity-50" onchange="onGroupChange()" disabled>
+                                <option value="">-- Chọn Nhóm --</option>
+                            </select>
+                        </div>
+                    </div>       
+                <input type="hidden" id="groupName" value="">
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="flex border-b">
+                    <button onclick="switchTab('groupTab')" id="btn-groupTab" class="tab-btn active flex-1 py-3 px-4 text-center text-sm text-gray-600 hover:bg-gray-50">
+                        <i class="fas fa-users mr-2"></i> 1. Đánh giá Chung (Nhóm)
+                    </button>
+                    <button onclick="switchTab('individualTab')" id="btn-individualTab" class="tab-btn flex-1 py-3 px-4 text-center text-sm text-gray-600 hover:bg-gray-50">
+                        <i class="fas fa-user-graduate mr-2"></i> 2. Đánh giá Cá Nhân (Đại diện)
+                    </button>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Lớp <span class="text-red-500">*</span></label>
-                    <input type="text" id="className" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 outline-none" placeholder="Ví dụ: 7A1">
+
+                <div id="groupTab" class="p-4 space-y-4">
+                    <div id="criteriaContainer" class="space-y-4">
+                        </div>
                 </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1 text-primary font-bold">Chọn Đề Ôn Tập <span class="text-red-500">*</span></label>
-                    <select id="testSelect" onchange="changeTest()" class="w-full p-2 border-2 border-green-300 rounded focus:ring-2 focus:ring-green-500 outline-none font-bold text-green-900 bg-green-50">
-                        <option value="test1">Đề số 01: Kiến thức cơ bản</option>
-                        <option value="test2">Đề số 02: Thao tác với ô và khối</option>
-                        <option value="test3">Đề số 03: Công thức và Hàm</option>
-                        <option value="test4">Đề số 04: Giao diện và Phím tắt</option>
-                        <option value="test5">Đề số 05: Tổng hợp nâng cao</option>
-                    </select>
+
+                <div id="individualTab" class="p-4 hidden">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                        <div class="flex flex-col md:flex-row md:items-center gap-3 mb-3">
+                            <label class="font-semibold text-blue-800 whitespace-nowrap">3. Chọn Sinh viên đại diện:</label>
+                            <select id="currentMemberName" class="flex-1 border border-blue-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none font-medium text-gray-700 bg-white shadow-sm disabled:opacity-50" disabled>
+                                <option value="">-- Vui lòng chọn Nhóm ở trên trước --</option>
+                            </select>
+
+                            <button onclick="addIndividualComment()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-sm whitespace-nowrap">
+                                <i class="fas fa-plus-circle mr-1"></i> Lưu nhận xét người này
+                            </button>
+                        </div>
+                        <p class="text-xs text-blue-600"><i class="fas fa-lightbulb"></i> Đánh giá người đại diện lên báo cáo 10 phút của nhóm.</p>
+                    </div>
+
+                    <div id="individualCriteriaContainer" class="space-y-4">
+                        </div>
+
+                    <div class="mt-6 border-t pt-4">
+                        <h3 class="font-semibold text-gray-700 mb-3"><i class="fas fa-clipboard-list mr-2 text-green-600"></i>Danh sách Đại diện đã nhận xét:</h3>
+                        <ul id="memberList" class="space-y-2 text-sm text-gray-600">
+                            <li class="italic text-gray-400">Chưa có đánh giá cá nhân nào...</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="lg:col-span-4 relative">
+            <div class="sticky top-20 space-y-4 glass-panel rounded-xl shadow-lg border border-gray-200 p-5">
+                <h2 class="font-bold text-lg text-gray-800 flex justify-between items-center border-b pb-2">
+                    <span><i class="fas fa-clipboard-check mr-2 text-blue-600"></i>Chấm Điểm & Phản Biện</span>
+                </h2>
+                
+                <div class="mt-2">
+                    <label class="block text-sm font-semibold text-gray-800 mb-1"><i class="fas fa-star text-yellow-500 mr-1"></i> Điểm đánh giá (Thang 10) <span class="text-red-500">*</span></label>
+                    <input type="number" id="scoreInput" min="0" max="10" step="0.25" placeholder="Ví dụ: 8.5" class="w-full border-2 border-yellow-200 rounded-lg p-2.5 text-base font-bold text-blue-800 focus:ring-2 focus:ring-yellow-500 outline-none bg-yellow-50">
+                </div>
+
+                <div class="mt-2">
+                    <label class="block text-sm font-semibold text-gray-800 mb-1"><i class="fas fa-question-circle text-purple-500 mr-1"></i> Câu hỏi phản biện</label>
+                    <textarea id="questionInput" rows="3" placeholder="Ghi nhận các thắc mắc hoặc câu hỏi bạn muốn hỏi nhóm báo cáo..." class="w-full border border-purple-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-purple-500 outline-none resize-none bg-purple-50"></textarea>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-gray-100 relative group">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Bản nháp nhận xét tổng hợp:</label>
+                    <textarea id="finalComment" rows="6" class="w-full border border-gray-300 rounded-lg p-2 text-xs text-gray-700 outline-none resize-none bg-gray-50 leading-relaxed font-mono" readonly placeholder="Kết quả sẽ tự động tổng hợp..."></textarea>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <button onclick="submitToSheet()" id="btnSubmit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition shadow-md flex justify-center items-center gap-2">
+                        <i class="fas fa-paper-plane"></i> GỬI KẾT QUẢ ĐÁNH GIÁ
+                    </button>
+                    <p id="submitStatus" class="text-xs text-center mt-2 hidden"></p>
                 </div>
             </div>
         </div>
-
-        <form id="quizForm" onsubmit="return false;">
-            
-            <!-- Phần 1: Trắc nghiệm -->
-            <div class="mb-8">
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">PHẦN 1</span>
-                    <h3 class="text-xl font-bold text-gray-800">Trắc nghiệm (Chọn đáp án đúng nhất)</h3>
-                </div>
-                <div id="mcqContainer" class="space-y-6">
-                    <!-- MCQ Items -->
-                </div>
-            </div>
-
-            <!-- Phần 2: Đúng Sai -->
-            <div class="mb-8">
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded">PHẦN 2</span>
-                    <h3 class="text-xl font-bold text-gray-800">Đúng / Sai</h3>
-                </div>
-                <div id="tfContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- TF Items -->
-                </div>
-            </div>
-
-            <!-- Phần 3: Kéo thả -->
-            <div class="mb-8">
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">PHẦN 3</span>
-                    <h3 class="text-xl font-bold text-gray-800">Ghép nối (Kéo thả từ vào ô trống)</h3>
-                </div>
-                
-                <!-- Word Bank -->
-                <div class="bg-white p-4 rounded-lg shadow border border-purple-200 mb-4 sticky top-20 z-40">
-                    <p class="text-sm text-gray-500 mb-2 font-medium">Kéo các thẻ sau vào ô trống thích hợp:</p>
-                    <div id="wordBank" class="flex flex-wrap gap-2">
-                        <!-- Draggable words -->
-                    </div>
-                </div>
-
-                <div id="dragDropContainer" class="space-y-4 bg-white p-6 rounded-lg shadow-sm">
-                    <!-- Sentences -->
-                </div>
-            </div>
-
-            <!-- Phần 4: Trả lời ngắn -->
-            <div class="mb-8">
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="bg-yellow-600 text-white text-xs font-bold px-2 py-1 rounded">PHẦN 4</span>
-                    <h3 class="text-xl font-bold text-gray-800">Trả lời ngắn</h3>
-                </div>
-                <div id="shortAnswerContainer" class="space-y-6">
-                    <!-- Short Answer items -->
-                </div>
-            </div>
-
-            <!-- Submit Actions -->
-            <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-lg z-50">
-                <div class="max-w-5xl mx-auto flex justify-between items-center">
-                    <div class="text-sm text-gray-600 hidden md:block">
-                        <span class="font-bold text-primary">Tin học 7</span> - Ôn tập học kì
-                    </div>
-                    <div class="flex gap-3 w-full md:w-auto">
-                        <button onclick="resetQuiz()" class="px-6 py-2 border border-gray-300 rounded text-gray-600 hover:bg-gray-50 font-medium transition">
-                            Làm lại
-                        </button>
-                        <button onclick="submitQuiz()" class="flex-1 md:flex-none px-8 py-2 bg-green-700 text-white rounded font-bold hover:bg-green-800 shadow-md transition transform hover:-translate-y-0.5">
-                            <i class="fas fa-check-circle mr-2"></i> Nộp bài & Xem điểm
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="h-16"></div> 
-
-        </form>
     </main>
 
     <script>
-        // --- DỮ LIỆU ĐỀ THI (5 ĐỀ) ---
-        const allTests = {
-            "test1": {
-                // Đề 1: Cơ bản về giao diện
-                mcq: [
-                    { id: "mc1", q: "Hộp tên (Name Box) hiển thị gì?", options: ["Công thức", "Địa chỉ ô đang chọn", "Dung lượng tệp", "Hàm đang dùng"], correct: 1 },
-                    { id: "mc2", q: "Thanh công thức dùng để làm gì?", options: ["Tạo biểu đồ", "Đổi màu chữ", "Nhập hoặc chỉnh sửa dữ liệu", "Tạo sheet mới"], correct: 2 },
-                    { id: "mc3", q: "Trong Excel, ô A1 là giao của:", options: ["Cột B và hàng 2", "Cột A và hàng 1", "Cột 1 và hàng A", "Cột A và hàng A"], correct: 1 },
-                    { id: "mc4", q: "Một trang tính (Sheet) bao gồm:", options: ["Các cột", "Các hàng", "Các ô", "Tất cả các ý trên"], correct: 3 },
-                    { id: "mc5", q: "Phần mở rộng mặc định của tệp Excel là:", options: [".doc", ".xls", ".xlsx", ".ppt"], correct: 2 }
-                ],
-                tf: [
-                    { id: "tf1", q: "Cột được đánh số thứ tự 1, 2, 3...", correct: false },
-                    { id: "tf2", q: "Hàng được đánh số thứ tự 1, 2, 3...", correct: true },
-                    { id: "tf3", q: "Một ô dữ liệu được xác định bằng giao điểm của dòng và cột.", correct: true }
-                ],
-                dragDrop: {
-                    words: ["Cột", "Hàng", "Ô", "Địa chỉ"],
-                    sentences: [
-                        { id: "dd1", text: "Tập hợp các ô nằm dọc được gọi là [].", answer: "Cột" },
-                        { id: "dd2", text: "Tập hợp các ô nằm ngang được gọi là [].", answer: "Hàng" },
-                        { id: "dd3", text: "Giao của một hàng và một cột gọi là [].", answer: "Ô" },
-                        { id: "dd4", text: "Cặp tên cột và số hàng (ví dụ B5) được gọi là [] ô.", answer: "Địa chỉ" }
-                    ]
-                },
-                shortAns: [
-                    { id: "sa1", q: "Ký tự đầu tiên cần gõ khi nhập công thức là gì?", answer: "=" }
-                ]
-            },
-            "test2": {
-                // Đề 2: Thao tác chọn và di chuyển
-                mcq: [
-                    { id: "mc1", q: "Để chọn toàn bộ bảng tính, nhấn tổ hợp phím:", options: ["Ctrl + B", "Ctrl + S", "Ctrl + E", "Ctrl + A"], correct: 3 },
-                    { id: "mc2", q: "Để chọn các ô không liền kề, ta giữ phím:", options: ["Shift", "Ctrl", "Alt", "Tab"], correct: 1 },
-                    { id: "mc3", q: "Để di chuyển con trỏ sang ô bên phải, ta nhấn phím:", options: ["Enter", "Tab", "Shift", "Esc"], correct: 1 },
-                    { id: "mc4", q: "Để chọn toàn bộ cột A, ta làm gì?", options: ["Nhấn vào ô A1", "Nhấn vào chữ A trên tiêu đề cột", "Kéo chuột từ trên xuống", "Nhấn Ctrl + A"], correct: 1 },
-                    { id: "mc5", q: "Khi nhấn Enter, con trỏ mặc định sẽ:", options: ["Di chuyển xuống dưới", "Di chuyển sang phải", "Đứng yên", "Xóa dữ liệu"], correct: 0 }
-                ],
-                tf: [
-                    { id: "tf1", q: "Muốn chọn một khối ô liền kề, ta dùng phím Shift và chuột.", correct: true },
-                    { id: "tf2", q: "Double-click vào ranh giới cột sẽ tự động điều chỉnh độ rộng cột theo nội dung.", correct: true },
-                    { id: "tf3", q: "Thanh cuộn dùng để tính toán dữ liệu.", correct: false }
-                ],
-                dragDrop: {
-                    words: ["Ctrl+C", "Ctrl+V", "Ctrl+X", "Ctrl+S"],
-                    sentences: [
-                        { id: "dd1", text: "Phím tắt dùng để sao chép là [].", answer: "Ctrl+C" },
-                        { id: "dd2", text: "Phím tắt dùng để dán là [].", answer: "Ctrl+V" },
-                        { id: "dd3", text: "Phím tắt dùng để cắt (di chuyển) là [].", answer: "Ctrl+X" },
-                        { id: "dd4", text: "Phím tắt dùng để lưu bài là [].", answer: "Ctrl+S" }
-                    ]
-                },
-                shortAns: [
-                    { id: "sa1", q: "Phím chức năng nào giúp chỉnh sửa nội dung ngay trong ô?", answer: "F2" }
-                ]
-            },
-            "test3": {
-                // Đề 3: Dữ liệu và Công thức
-                mcq: [
-                    { id: "mc1", q: "Công thức =A1+B1 được nhập ở đâu?", options: ["Thanh công thức", "Trực tiếp trong ô", "Cả A và B đúng", "Không nhập được"], correct: 2 },
-                    { id: "mc2", q: "Khi gõ chữ mà ô hiển thị ##### nghĩa là:", options: ["Lỗi file", "Sai công thức", "Virus", "Ô không đủ rộng để hiển thị số"], correct: 3 },
-                    { id: "mc3", q: "Kiểu dữ liệu Text (văn bản) mặc định căn lề nào?", options: ["Trái", "Phải", "Giữa", "Tùy ý"], correct: 0 },
-                    { id: "mc4", q: "Muốn nhập văn bản bắt đầu bằng dấu bằng, ta gõ:", options: ["==", "Space =", "'=", ".="], correct: 2 },
-                    { id: "mc5", q: "Công cụ Fill Handle (nút điền) dùng để:", options: ["Xóa ô", "Sao chép công thức/dữ liệu nhanh", "Lưu file", "Đóng file"], correct: 1 }
-                ],
-                tf: [
-                    { id: "tf1", q: "Công thức trong Excel phải luôn bắt đầu bằng dấu =.", correct: true },
-                    { id: "tf2", q: "Một ô chỉ chứa được số, không chứa được chữ.", correct: false },
-                    { id: "tf3", q: "Excel tự động phân biệt dữ liệu số và dữ liệu văn bản.", correct: true }
-                ],
-                dragDrop: {
-                    words: ["Số", "Văn bản", "Công thức", "Ngày tháng"],
-                    sentences: [
-                        { id: "dd1", text: "Dữ liệu dùng để tính toán cộng trừ nhân chia là dữ liệu [].", answer: "Số" },
-                        { id: "dd2", text: "Dữ liệu gồm các chữ cái A-Z là dữ liệu [].", answer: "Văn bản" },
-                        { id: "dd3", text: "Biểu thức bắt đầu bằng dấu = gọi là [].", answer: "Công thức" },
-                        { id: "dd4", text: "Dữ liệu kiểu 15/12/2023 là dữ liệu [].", answer: "Ngày tháng" }
-                    ]
-                },
-                shortAns: [
-                    { id: "sa1", q: "Để xuống dòng trong cùng một ô, ta nhấn tổ hợp phím gì?", answer: "Alt+Enter" }
-                ]
-            },
-            "test4": {
-                // Đề 4: Địa chỉ và Khối
-                mcq: [
-                    { id: "mc1", q: "Khối ô A1:A10 gồm bao nhiêu ô?", options: ["8", "9", "10", "11"], correct: 2 },
-                    { id: "mc2", q: "Địa chỉ khối A1:C3 bao gồm bao nhiêu ô?", options: ["3", "6", "9", "12"], correct: 2 },
-                    { id: "mc3", q: "Ký hiệu xác định một khối ô là dấu:", options: ["Chấm phẩy (;)", "Hai chấm (:)", "Phẩy (,)", "Cách (Space)"], correct: 1 },
-                    { id: "mc4", q: "A1:D1 là khối hình gì?", options: ["Khối ngang (hàng)", "Khối dọc (cột)", "Khối chữ nhật lớn", "Khối chéo"], correct: 0 },
-                    { id: "mc5", q: "Hộp tên (Name Box) có chức năng phụ là:", options: ["Xóa sheet", "Đóng Excel", "Di chuyển nhanh đến ô bằng cách nhập địa chỉ", "Vẽ hình"], correct: 2 }
-                ],
-                tf: [
-                    { id: "tf1", q: "Khối ô A1:A10 là khối dọc.", correct: true },
-                    { id: "tf2", q: "Không thể chọn nhiều khối ô cùng lúc.", correct: false },
-                    { id: "tf3", q: "Địa chỉ khối được viết là Ô đầu:Ô cuối (ví dụ A1:C5).", correct: true }
-                ],
-                dragDrop: {
-                    words: ["Khối", "Ctrl", "Shift", "NameBox"],
-                    sentences: [
-                        { id: "dd1", text: "Tập hợp các ô liền kề tạo thành hình chữ nhật gọi là [].", answer: "Khối" },
-                        { id: "dd2", text: "Phím giữ để chọn các ô rời rạc là phím [].", answer: "Ctrl" },
-                        { id: "dd3", text: "Phím giữ để chọn khối liền kề (kết hợp chuột) là phím [].", answer: "Shift" },
-                        { id: "dd4", text: "Nơi hiển thị địa chỉ của khối đang chọn là [].", answer: "NameBox" }
-                    ]
-                },
-                shortAns: [
-                    { id: "sa1", q: "Tên của cột đầu tiên trong bảng tính là gì?", answer: "A" }
-                ]
-            },
-            "test5": {
-                // Đề 5: Tổng hợp nâng cao
-                mcq: [
-                    { id: "mc1", q: "Để chèn thêm một hàng mới, ta dùng lệnh:", options: ["Insert Row", "Insert Column", "Delete Row", "Format Cell"], correct: 0 },
-                    { id: "mc2", q: "Công cụ sao chép định dạng (Format Painter) có biểu tượng hình:", options: ["Cái kéo", "Cây chổi sơn", "Đĩa mềm", "Máy in"], correct: 1 },
-                    { id: "mc3", q: "Để xóa dữ liệu trong ô (nhưng không xóa ô), nhấn phím:", options: ["Delete", "Esc", "Shift", "Ctrl"], correct: 0 },
-                    { id: "mc4", q: "Thanh hiển thị tên các Sheet (Trang tính) nằm ở:", options: ["Trên cùng", "Bên phải", "Dưới cùng bên trái", "Giữa màn hình"], correct: 2 },
-                    { id: "mc5", q: "Khi kéo công thức, địa chỉ ô thay đổi tương ứng gọi là:", options: ["Địa chỉ tuyệt đối", "Địa chỉ tương đối", "Địa chỉ cố định", "Địa chỉ sai"], correct: 1 }
-                ],
-                tf: [
-                    { id: "tf1", q: "Có thể đổi tên Sheet bằng cách nháy đúp chuột vào tên Sheet.", correct: true },
-                    { id: "tf2", q: "Một hàng được xác định bằng chữ cái A, B, C...", correct: false },
-                    { id: "tf3", q: "Hộp tên nằm bên trái thanh công thức.", correct: true }
-                ],
-                dragDrop: {
-                    words: ["Tương đối", "Tuyệt đối", "Zoom", "Scroll"],
-                    sentences: [
-                        { id: "dd1", text: "Thanh trượt dùng để phóng to/thu nhỏ màn hình gọi là [].", answer: "Zoom" },
-                        { id: "dd2", text: "Thanh dùng để cuộn xem dữ liệu khuất gọi là [].", answer: "Scroll" },
-                        { id: "dd3", text: "Địa chỉ ô thay đổi khi sao chép công thức (ví dụ A1) là địa chỉ [].", answer: "Tương đối" },
-                        { id: "dd4", text: "Địa chỉ ô cố định có dấu $ (ví dụ $A$1) là địa chỉ [].", answer: "Tuyệt đối" }
-                    ]
-                },
-                shortAns: [
-                    { id: "sa1", q: "Để hủy bỏ thao tác vừa làm (Undo), ta nhấn tổ hợp phím gì?", answer: "Ctrl+Z" }
-                ]
-            }
-        };
+        // ==========================================
+        // CẤU HÌNH GOOGLE APPS SCRIPT URL
+        // ==========================================
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyEP_kko3wt2-XAhmTEQXHoRbUYNRDUOo8CiU9O7_lVTpwxm4mSj047da2O_N2aYs8Bog/exec";
 
-        let currentQuizData = allTests["test1"];
+        // ==========================================
+        // KHU VỰC DÁN DỮ LIỆU FILE CSV (187+ SINH VIÊN)
+        // ==========================================
+        const STUDENT_CSV_DATA = `STT,MSSV,HoTen,Báo cáo kỹ năng,Nhóm
+1,25280007,HUỲNH HUYỀN TRÂN,Tuần 4-03-Kỹ năng ứng dụng công nghệ số vào tìm kiếm và lưu trữ thông tin,T6-01
+2,25280014,LÊ ĐÌNH QUỐC DŨNG,Tuần 4-03-Kỹ năng ứng dụng công nghệ số vào tìm kiếm và lưu trữ thông tin,T6-01
+3,25280032,NGUYỄN ĐOÀN QUỲNH NHƯ,Tuần 4-03-Kỹ năng ứng dụng công nghệ số vào tìm kiếm và lưu trữ thông tin,T6-01
+4,25280033,TRẦN HUỲNH NHƯ,Tuần 4-03-Kỹ năng ứng dụng công nghệ số vào tìm kiếm và lưu trữ thông tin,T6-01
+5,25280035,PHÙNG HOÀNG HỮU PHÚ,Tuần 4-03-Kỹ năng ứng dụng công nghệ số vào tìm kiếm và lưu trữ thông tin,T6-01
+6,25280038,NGUYỄN NGỌC BẢO PHƯƠNG,Tuần 4-03-Kỹ năng ứng dụng công nghệ số vào tìm kiếm và lưu trữ thông tin,T6-01
+7,25280040,TRƯƠNG MINH QUÂN,Tuần 4-03-Kỹ năng ứng dụng công nghệ số vào tìm kiếm và lưu trữ thông tin,T6-01
+8,25280044,TRẦN VĂN THỊNH,Tuần 4-03-Kỹ năng ứng dụng công nghệ số vào tìm kiếm và lưu trữ thông tin,T6-01
+9,25280064,NGUYỄN KIM,Tuần 4-03-Kỹ năng ứng dụng công nghệ số vào tìm kiếm và lưu trữ thông tin,T6-01
+10,25280071,VÕ TRIẾT SƠN,Tuần 4-03-Kỹ năng ứng dụng công nghệ số vào tìm kiếm và lưu trữ thông tin,T6-01
+11,21110149,PHÚC HUỲNH NGỌC HỒNG,Tuần 4-02-Kỹ năng cân bằng giữa công việc và cuộc sống (Work-Life Balance),T6-02
+12,25280003,TRƯƠNG HỒ MINH THUẤN,Tuần 4-02-Kỹ năng cân bằng giữa công việc và cuộc sống (Work-Life Balance),T6-02
+13,25280016,PHẠM NGỌC HÂN,Tuần 4-02-Kỹ năng cân bằng giữa công việc và cuộc sống (Work-Life Balance),T6-02
+14,25280022,VÕ TUẤN KIỆT,Tuần 4-02-Kỹ năng cân bằng giữa công việc và cuộc sống (Work-Life Balance),T6-02
+15,25280025,LÊ HOÀNG CHI MAI,Tuần 4-02-Kỹ năng cân bằng giữa công việc và cuộc sống (Work-Life Balance),T6-02
+16,25280027,TÔN THẤT THIỆN MINH,Tuần 4-02-Kỹ năng cân bằng giữa công việc và cuộc sống (Work-Life Balance),T6-02
+17,25280028,LÂM KHẢ NGÂN,Tuần 4-02-Kỹ năng cân bằng giữa công việc và cuộc sống (Work-Life Balance),T6-02
+18,25280099,VŨ LONG ĐỨC,Tuần 4-02-Kỹ năng cân bằng giữa công việc và cuộc sống (Work-Life Balance),T6-02
+19,25280103,NGUYỄN HOÀNG MINH HIẾU,Tuần 4-02-Kỹ năng cân bằng giữa công việc và cuộc sống (Work-Life Balance),T6-02
+20,25280122,DOÃN TRỌNG QUÝ,Tuần 4-02-Kỹ năng cân bằng giữa công việc và cuộc sống (Work-Life Balance),T6-02
+21,25280126,TRẦN NGUYỄN TUỆ VƯƠNG,Tuần 4-02-Kỹ năng cân bằng giữa công việc và cuộc sống (Work-Life Balance),T6-02
+22,22280068,PHƯỚC NGUYỄN THANH,Tuần 5-01-Tư duy phát triển (Growth Mindset) và kỹ năng hồi phục sau thất bại,T6-03
+23,25110086,LÊ LONG NHẬT,Tuần 5-01-Tư duy phát triển (Growth Mindset) và kỹ năng hồi phục sau thất bại,T6-03
+24,25110090,VŨ PHAN QUỲNH NHI,Tuần 5-01-Tư duy phát triển (Growth Mindset) và kỹ năng hồi phục sau thất bại,T6-03
+25,25110094,NGUYỄN NHÃ PHONG,Tuần 5-01-Tư duy phát triển (Growth Mindset) và kỹ năng hồi phục sau thất bại,T6-03
+26,25110096,PHẠM THANH PHONG,Tuần 5-01-Tư duy phát triển (Growth Mindset) và kỹ năng hồi phục sau thất bại,T6-03
+27,25110100,TRẦN LÊ MINH PHÚC,Tuần 5-01-Tư duy phát triển (Growth Mindset) và kỹ năng hồi phục sau thất bại,T6-03
+28,25110110,HUỲNH PHAN QUỲNH,Tuần 5-01-Tư duy phát triển (Growth Mindset) và kỹ năng hồi phục sau thất bại,T6-03
+29,25110133,NGÔ ĐÀO HƯƠNG TRANG,Tuần 5-01-Tư duy phát triển (Growth Mindset) và kỹ năng hồi phục sau thất bại,T6-03
+30,25280013,LÝ TƯ DUNG,Tuần 5-01-Tư duy phát triển (Growth Mindset) và kỹ năng hồi phục sau thất bại,T6-03
+31,25280093,NGUYỄN THANH MINH ANH,Tuần 5-01-Tư duy phát triển (Growth Mindset) và kỹ năng hồi phục sau thất bại,T6-03
+32,25280004,VŨ KHÁNH DUY,Tuần 6-01-Kỹ năng Ghi chép hiệu quả và Kỹ năng đọc chủ động,T6-04
+33,25280006,NGUYỄN PHÚ THỊNH,Tuần 6-01-Kỹ năng Ghi chép hiệu quả và Kỹ năng đọc chủ động,T6-04
+34,25280010,ĐOÀN NGUYỄN GIA BẢO,Tuần 6-01-Kỹ năng Ghi chép hiệu quả và Kỹ năng đọc chủ động,T6-04
+35,25280018,HÀ VIỆT HOÀNG,Tuần 6-01-Kỹ năng Ghi chép hiệu quả và Kỹ năng đọc chủ động,T6-04
+36,25280021,TRẦN ĐĂNG KHOA,Tuần 6-01-Kỹ năng Ghi chép hiệu quả và Kỹ năng đọc chủ động,T6-04
+37,25280042,TRẦN THANH SƠN,Tuần 6-01-Kỹ năng Ghi chép hiệu quả và Kỹ năng đọc chủ động,T6-04
+38,25280050,NGUYỄN THẾ VINH,Tuần 6-01-Kỹ năng Ghi chép hiệu quả và Kỹ năng đọc chủ động,T6-04
+39,25280082,PHẠM KHÁNH AN,Tuần 6-01-Kỹ năng Ghi chép hiệu quả và Kỹ năng đọc chủ động,T6-04
+40,25280110,VŨ HOÀNG KHIÊM,Tuần 6-01-Kỹ năng Ghi chép hiệu quả và Kỹ năng đọc chủ động,T6-04
+41,25280120,NGUYỄN GIA PHÚ,Tuần 6-01-Kỹ năng Ghi chép hiệu quả và Kỹ năng đọc chủ động,T6-04
+42,25110104,NGUYỄN DƯƠNG NGỌC PHƯƠNG,Tuần 5-03-Kỹ năng quản lý tài chính cá nhân cho sinh viên,T6-05
+43,25110109,TRẦN TÚ QUYÊN,Tuần 5-03-Kỹ năng quản lý tài chính cá nhân cho sinh viên,T6-05
+44,25110113,ĐỒNG MINH TẤN,Tuần 5-03-Kỹ năng quản lý tài chính cá nhân cho sinh viên,T6-05
+45,25110114,VÒNG ĐẠI THẮNG,Tuần 5-03-Kỹ năng quản lý tài chính cá nhân cho sinh viên,T6-05
+46,25110124,LÊ HUY THÔNG,Tuần 5-03-Kỹ năng quản lý tài chính cá nhân cho sinh viên,T6-05
+47,25110127,DƯƠNG TẤN THUẬN,Tuần 5-03-Kỹ năng quản lý tài chính cá nhân cho sinh viên,T6-05
+48,25110130,NGUYỄN TRUNG TÍN,Tuần 5-03-Kỹ năng quản lý tài chính cá nhân cho sinh viên,T6-05
+49,25110134,HỒ HỮU TRÍ,Tuần 5-03-Kỹ năng quản lý tài chính cá nhân cho sinh viên,T6-05
+50,25110139,NGUYỄN MINH TÚ,Tuần 5-03-Kỹ năng quản lý tài chính cá nhân cho sinh viên,T6-05
+51,25110141,ĐÀM VĂN TUẤN,Tuần 5-03-Kỹ năng quản lý tài chính cá nhân cho sinh viên,T6-05
+52,25110142,ĐÀO ANH TUẤN,Tuần 5-03-Kỹ năng quản lý tài chính cá nhân cho sinh viên,T6-05
+53,25280005,TRẦN XUÂN KHÁNH NGỌC,"Tuần 4-01-Kỹ năng nâng cao năng lực thông tin cho sinh viên trong việc tiếp cận & chọn lọc và xử lý thông tin từ Internet",T6-06
+54,25280008,HUỲNH NGỌC TRÂM ANH,"Tuần 4-01-Kỹ năng nâng cao năng lực thông tin cho sinh viên trong việc tiếp cận & chọn lọc và xử lý thông tin từ Internet",T6-06
+55,25280045,VÕ MINH THƠ,"Tuần 4-01-Kỹ năng nâng cao năng lực thông tin cho sinh viên trong việc tiếp cận & chọn lọc và xử lý thông tin từ Internet",T6-06
+56,25280058,PHAN TRẦN GIA HÂN,"Tuần 4-01-Kỹ năng nâng cao năng lực thông tin cho sinh viên trong việc tiếp cận & chọn lọc và xử lý thông tin từ Internet",T6-06
+57,25280080,NGUYỄN THỊ YẾN VY,"Tuần 4-01-Kỹ năng nâng cao năng lực thông tin cho sinh viên trong việc tiếp cận & chọn lọc và xử lý thông tin từ Internet",T6-06
+58,25280081,PHAN NGỌC KHÁNH VY,"Tuần 4-01-Kỹ năng nâng cao năng lực thông tin cho sinh viên trong việc tiếp cận & chọn lọc và xử lý thông tin từ Internet",T6-06
+59,25280083,TRẦN NGUYỄN YẾN ANH,"Tuần 4-01-Kỹ năng nâng cao năng lực thông tin cho sinh viên trong việc tiếp cận & chọn lọc và xử lý thông tin từ Internet",T6-06
+60,25280090,ĐẶNG THỊ KIỀU TIÊN,"Tuần 4-01-Kỹ năng nâng cao năng lực thông tin cho sinh viên trong việc tiếp cận & chọn lọc và xử lý thông tin từ Internet",T6-06
+61,25280102,LÊ THANH HIẾU,"Tuần 4-01-Kỹ năng nâng cao năng lực thông tin cho sinh viên trong việc tiếp cận & chọn lọc và xử lý thông tin từ Internet",T6-06
+62,25280106,ĐINH DƯƠNG HUY,"Tuần 4-01-Kỹ năng nâng cao năng lực thông tin cho sinh viên trong việc tiếp cận & chọn lọc và xử lý thông tin từ Internet",T6-06
+63,25280115,LÊ VĂN NHÂN,"Tuần 4-01-Kỹ năng nâng cao năng lực thông tin cho sinh viên trong việc tiếp cận & chọn lọc và xử lý thông tin từ Internet",T6-06
+64,25280015,NGUYỄN THÙY DUYÊN,Tuần 6-02-Kỹ năng xử lý thông tin và dữ liệu trong nghiên cứu Khoa học,T6-07
+65,25280019,NGUYỄN QUANG HUY KHÁNH,Tuần 6-02-Kỹ năng xử lý thông tin và dữ liệu trong nghiên cứu Khoa học,T6-07
+66,25280029,TÔ NGUYỄN THẢO NGỌC,Tuần 6-02-Kỹ năng xử lý thông tin và dữ liệu trong nghiên cứu Khoa học,T6-07
+67,25280036,NGUYỄN TRƯỜNG PHÚC,Tuần 6-02-Kỹ năng xử lý thông tin và dữ liệu trong nghiên cứu Khoa học,T6-07
+68,25280068,HUỲNH THỊ KHÁNH NGÂN,Tuần 6-02-Kỹ năng xử lý thông tin và dữ liệu trong nghiên cứu Khoa học,T6-07
+69,25280092,LƯƠNG HUỲNH KỲ ANH,Tuần 6-02-Kỹ năng xử lý thông tin và dữ liệu trong nghiên cứu Khoa học,T6-07
+70,25280104,NGUYỄN TRỌNG PHƯỚC HƯNG,Tuần 6-02-Kỹ năng xử lý thông tin và dữ liệu trong nghiên cứu Khoa học,T6-07
+71,25280105,ĐẶNG ĐINH BẢO HUY,Tuần 6-02-Kỹ năng xử lý thông tin và dữ liệu trong nghiên cứu Khoa học,T6-07
+72,25280124,HỒ BẢO TIÊN,Tuần 6-02-Kỹ năng xử lý thông tin và dữ liệu trong nghiên cứu Khoa học,T6-07
+73,25280127,NGUYỄN ĐÌNH XUÂN VY,Tuần 6-02-Kỹ năng xử lý thông tin và dữ liệu trong nghiên cứu Khoa học,T6-07
+74,25280012,PHAN VĂN ĐẠT,Tuần 5-02-Kỹ năng thiết kế Prompt(Prompt Engineering) cơ bản để tự học và nghiên cứu cùng AI,T6-08
+75,25280017,TRẦN ĐỨC HIẾU,Tuần 5-02-Kỹ năng thiết kế Prompt(Prompt Engineering) cơ bản để tự học và nghiên cứu cùng AI,T6-08
+76,25280020,TRẦN TRỌNG KHIÊM,Tuần 5-02-Kỹ năng thiết kế Prompt(Prompt Engineering) cơ bản để tự học và nghiên cứu cùng AI,T6-08
+77,25280026,LÊ KHÁNH NHẬT MINH,Tuần 5-02-Kỹ năng thiết kế Prompt(Prompt Engineering) cơ bản để tự học và nghiên cứu cùng AI,T6-08
+78,25280075,DƯƠNG ĐỨC TOÀN,Tuần 5-02-Kỹ năng thiết kế Prompt(Prompt Engineering) cơ bản để tự học và nghiên cứu cùng AI,T6-08
+79,25280094,PHẠM THẾ ANH,Tuần 5-02-Kỹ năng thiết kế Prompt(Prompt Engineering) cơ bản để tự học và nghiên cứu cùng AI,T6-08
+80,25280096,NGUYỄN THỊ NHƯ BÌNH,Tuần 5-02-Kỹ năng thiết kế Prompt(Prompt Engineering) cơ bản để tự học và nghiên cứu cùng AI,T6-08
+81,25280101,LÊ NGUYỄN MINH HIẾU,Tuần 5-02-Kỹ năng thiết kế Prompt(Prompt Engineering) cơ bản để tự học và nghiên cứu cùng AI,T6-08
+82,25280111,NGUYỄN HỒ MINH KHÔI,Tuần 5-02-Kỹ năng thiết kế Prompt(Prompt Engineering) cơ bản để tự học và nghiên cứu cùng AI,T6-08
+83,25280112,NGUYỄN MINH KHÔI,Tuần 5-02-Kỹ năng thiết kế Prompt(Prompt Engineering) cơ bản để tự học và nghiên cứu cùng AI,T6-08
+84,25110188,TRẦN THANH BÌNH,Tuần 6-03-15. Kỹ năng bảo mật thông tin cá nhân và an toàn trên không gian mạng,T6-09
+85,25110194,VŨ ĐỖ TIẾN ĐẠT,Tuần 6-03-15. Kỹ năng bảo mật thông tin cá nhân và an toàn trên không gian mạng,T6-09
+86,25110207,NGUYỄN HOÀNG GIA HUY,Tuần 6-03-15. Kỹ năng bảo mật thông tin cá nhân và an toàn trên không gian mạng,T6-09
+87,25110215,ĐOÀN CÔNG LỘC,Tuần 6-03-15. Kỹ năng bảo mật thông tin cá nhân và an toàn trên không gian mạng,T6-09
+88,25110221,HOÀNG PHƯỚC NGUYÊN,Tuần 6-03-15. Kỹ năng bảo mật thông tin cá nhân và an toàn trên không gian mạng,T6-09
+89,25110227,PHẠM TIẾN PHÁT,Tuần 6-03-15. Kỹ năng bảo mật thông tin cá nhân và an toàn trên không gian mạng,T6-09
+90,25110228,NGUYỄN HOÀNG PHÚC,Tuần 6-03-15. Kỹ năng bảo mật thông tin cá nhân và an toàn trên không gian mạng,T6-09
+91,25280001,HUỲNH THỊ MỸ HƯNG,Tuần 6-03-15. Kỹ năng bảo mật thông tin cá nhân và an toàn trên không gian mạng,T6-09
+92,25280002,LÂM MINH THƯ,Tuần 6-03-15. Kỹ năng bảo mật thông tin cá nhân và an toàn trên không gian mạng,T6-09
+93,25280041,PHAN ĐẶNG THÁI SƠN,Tuần 6-03-15. Kỹ năng bảo mật thông tin cá nhân và an toàn trên không gian mạng,T6-09
+94,25110010,HOÀNG NHẬT ANH,Tuần 6-02-Kỹ năng tự học và xây dựng lộ trình học tập cá nhân (self-directed learning),T7-01
+95,25110011,NGUYỄN NGỌC PHƯƠNG ANH,Tuần 6-02-Kỹ năng tự học và xây dựng lộ trình học tập cá nhân (self-directed learning),T7-01
+96,25110025,LÊ QUANG ĐẠT,Tuần 6-02-Kỹ năng tự học và xây dựng lộ trình học tập cá nhân (self-directed learning),T7-01
+97,25110045,TRỊNH HUY HOÀNG,Tuần 6-02-Kỹ năng tự học và xây dựng lộ trình học tập cá nhân (self-directed learning),T7-01
+98,25110049,ĐINH XUÂN HUY,Tuần 6-02-Kỹ năng tự học và xây dựng lộ trình học tập cá nhân (self-directed learning),T7-01
+99,25110050,HUỲNH VŨ GIA HUY,Tuần 6-02-Kỹ năng tự học và xây dựng lộ trình học tập cá nhân (self-directed learning),T7-01
+100,25110055,ĐÀO NGUYỄN QUỐC KHANG,Tuần 6-02-Kỹ năng tự học và xây dựng lộ trình học tập cá nhân (self-directed learning),T7-01
+101,25110063,ĐỖ ĐĂNG KHOA,Tuần 6-02-Kỹ năng tự học và xây dựng lộ trình học tập cá nhân (self-directed learning),T7-01
+102,25110070,HOÀNG HẢI LONG,Tuần 6-02-Kỹ năng tự học và xây dựng lộ trình học tập cá nhân (self-directed learning),T7-01
+103,25110072,VŨ HOÀNG LONG,Tuần 6-02-Kỹ năng tự học và xây dựng lộ trình học tập cá nhân (self-directed learning),T7-01
+104,25280107,ĐINH THANH HUY,Tuần 5-03-Computational Thinking - Tư duy thuật toán,T7-02
+105,25280060,VÕ TRẦN ĐỨC HUY,Tuần 5-03-Computational Thinking - Tư duy thuật toán,T7-02
+106,25280063,PHẠM TRUNG KIÊN,Tuần 5-03-Computational Thinking - Tư duy thuật toán,T7-02
+107,25280085,NGUYỄN ANH KIỆT,Tuần 5-03-Computational Thinking - Tư duy thuật toán,T7-02
+108,25280086,VÕ PHÚC LỘC,Tuần 5-03-Computational Thinking - Tư duy thuật toán,T7-02
+109,25280087,NGUYỄN TUYẾT MINH,Tuần 5-03-Computational Thinking - Tư duy thuật toán,T7-02
+110,25280113,TRẦN KHÔI NGUYÊN,Tuần 5-03-Computational Thinking - Tư duy thuật toán,T7-02
+111,25280073,NGUYỄN LÊ ANH TÀI,Tuần 5-03-Computational Thinking - Tư duy thuật toán,T7-02
+112,25280048,TRƯƠNG ĐÌNH TRÍ,Tuần 5-03-Computational Thinking - Tư duy thuật toán,T7-02
+113,25280054,PHAN NGUYỄN TƯỜNG VY,Tuần 5-03-Computational Thinking - Tư duy thuật toán,T7-02
+114,25280056,NGÔ GIA BẢO,Tuần 4-01-Kỹ năng số hóa tài liệu và quản lí không gian lưu trữ cá nhân khoa học,T7-03
+115,25110200,NGUYỄN HỮU HOÀ,Tuần 4-01-Kỹ năng số hóa tài liệu và quản lí không gian lưu trữ cá nhân khoa học,T7-03
+116,25110078,VŨ HOÀNG NAM,Tuần 4-01-Kỹ năng số hóa tài liệu và quản lí không gian lưu trữ cá nhân khoa học,T7-03
+117,25110083,NGUYỄN LÊ PHI NGƯ,Tuần 4-01-Kỹ năng số hóa tài liệu và quản lí không gian lưu trữ cá nhân khoa học,T7-03
+118,25110091,NGUYỄN THANH NHIỆT,Tuần 4-01-Kỹ năng số hóa tài liệu và quản lí không gian lưu trữ cá nhân khoa học,T7-03
+119,25110233,TRẦN LÊ DIỄM QUỲNH,Tuần 4-01-Kỹ năng số hóa tài liệu và quản lí không gian lưu trữ cá nhân khoa học,T7-03
+120,25110115,NGUYỄN CHÍ THÀNH,Tuần 4-01-Kỹ năng số hóa tài liệu và quản lí không gian lưu trữ cá nhân khoa học,T7-03
+121,25110129,NGUYỄN ANH TIẾN,Tuần 4-01-Kỹ năng số hóa tài liệu và quản lí không gian lưu trữ cá nhân khoa học,T7-03
+122,25110240,LÊ NGỌC BẢO TRÂN,Tuần 4-01-Kỹ năng số hóa tài liệu và quản lí không gian lưu trữ cá nhân khoa học,T7-03
+123,25110241,LÊ THỊ THU TRANG,Tuần 4-01-Kỹ năng số hóa tài liệu và quản lí không gian lưu trữ cá nhân khoa học,T7-03
+124,25110051,NGUYỄN MINH HUY,"Tuần 6-01-Kỹ năng đàm phán & thuyết phục và bảo vệ quan điểm trước tập thể.",T7-04
+125,25110073,THÁI TUỆ MẪN,"Tuần 6-01-Kỹ năng đàm phán & thuyết phục và bảo vệ quan điểm trước tập thể.",T7-04
+126,25110085,ĐINH VĂN NHẬT,"Tuần 6-01-Kỹ năng đàm phán & thuyết phục và bảo vệ quan điểm trước tập thể.",T7-04
+127,25110103,LÊ NGUYÊN PHƯƠNG,"Tuần 6-01-Kỹ năng đàm phán & thuyết phục và bảo vệ quan điểm trước tập thể.",T7-04
+128,25110116,NGUYỄN THỊ PHƯƠNG THẢO,"Tuần 6-01-Kỹ năng đàm phán & thuyết phục và bảo vệ quan điểm trước tập thể.",T7-04
+129,25110125,PHẠM NGUYỄN ANH THƯ,"Tuần 6-01-Kỹ năng đàm phán & thuyết phục và bảo vệ quan điểm trước tập thể.",T7-04
+130,25110175,NGUYỄN PHƯỚC TÍN,"Tuần 6-01-Kỹ năng đàm phán & thuyết phục và bảo vệ quan điểm trước tập thể.",T7-04
+131,25110243,NGÔ PHÁT TRIỂN,"Tuần 6-01-Kỹ năng đàm phán & thuyết phục và bảo vệ quan điểm trước tập thể.",T7-04
+132,25110137,HOÀNG VIỆT TRUNG,"Tuần 6-01-Kỹ năng đàm phán & thuyết phục và bảo vệ quan điểm trước tập thể.",T7-04
+133,25110245,CHÂU THANH TÙNG,"Tuần 6-01-Kỹ năng đàm phán & thuyết phục và bảo vệ quan điểm trước tập thể.",T7-04
+134,25110192,LƯU CÔNG DANH,Tuần 5-01-30. kỹ năng quản lý tài chính cá nhân dành cho sinh viên,T7-05
+135,25110031,TRẦN TẤN DIỆN,Tuần 5-01-30. kỹ năng quản lý tài chính cá nhân dành cho sinh viên,T7-05
+136,25110202,PHẠM MINH HOÀNG,Tuần 5-01-30. kỹ năng quản lý tài chính cá nhân dành cho sinh viên,T7-05
+137,25110204,NGÔ QUỐC THIÊN HƯƠNG,Tuần 5-01-30. kỹ năng quản lý tài chính cá nhân dành cho sinh viên,T7-05
+138,25110210,NGUYỄN MINH KHÔI,Tuần 5-01-30. kỹ năng quản lý tài chính cá nhân dành cho sinh viên,T7-05
+139,25110212,TRẦN KHẢ KÍNH,Tuần 5-01-30. kỹ năng quản lý tài chính cá nhân dành cho sinh viên,T7-05
+140,25110214,NGUYỄN HOÀNG LÂM,Tuần 5-01-30. kỹ năng quản lý tài chính cá nhân dành cho sinh viên,T7-05
+141,25110216,HỒ NGỌC LONG,Tuần 5-01-30. kỹ năng quản lý tài chính cá nhân dành cho sinh viên,T7-05
+142,25110225,BÙI TẤN PHÁT,Tuần 5-01-30. kỹ năng quản lý tài chính cá nhân dành cho sinh viên,T7-05
+143,25110138,NGUYỄN MINH TRUNG,Tuần 5-01-30. kỹ năng quản lý tài chính cá nhân dành cho sinh viên,T7-05
+144,25110198,LÊ ĐỖ BẢO DUY,Tuần 5-02-Kỹ năng tìm kiếm tài liệu học thuật và trích dẫn quốc tế (APA_IEEE),T7-06
+145,25110190,NGUYỄN LÊ QUANG ĐẠI,Tuần 5-02-Kỹ năng tìm kiếm tài liệu học thuật và trích dẫn quốc tế (APA_IEEE),T7-06
+146,25110164,HUỲNH HOÀNG HUY,Tuần 5-02-Kỹ năng tìm kiếm tài liệu học thuật và trích dẫn quốc tế (APA_IEEE),T7-06
+147,25110002,PHAN NGUYỄN TIẾN KHOA,Tuần 5-02-Kỹ năng tìm kiếm tài liệu học thuật và trích dẫn quốc tế (APA_IEEE),T7-06
+148,25110232,TÔ HỮU QUỐC,Tuần 5-02-Kỹ năng tìm kiếm tài liệu học thuật và trích dẫn quốc tế (APA_IEEE),T7-06
+149,25110236,CHÂU HẢI THIÊN,Tuần 5-02-Kỹ năng tìm kiếm tài liệu học thuật và trích dẫn quốc tế (APA_IEEE),T7-06
+150,25110237,TRÀ MINH THIỆN,Tuần 5-02-Kỹ năng tìm kiếm tài liệu học thuật và trích dẫn quốc tế (APA_IEEE),T7-06
+151,25110178,HOÀNG MINH TUẤN,Tuần 5-02-Kỹ năng tìm kiếm tài liệu học thuật và trích dẫn quốc tế (APA_IEEE),T7-06
+152,25110193,LÊ ĐỖ TIẾN ĐẠT,Tuần 4-03-Tư duy phát triển (Growth Mindset) và kỹ năng phục hồi sau thất bại,T7-07
+153,25110157,LƯƠNG GIA HÂN,Tuần 4-03-Tư duy phát triển (Growth Mindset) và kỹ năng phục hồi sau thất bại,T7-07
+154,25110199,DANH NHỰT HÀO,Tuần 4-03-Tư duy phát triển (Growth Mindset) và kỹ năng phục hồi sau thất bại,T7-07
+155,25110004,NGUYỄN ĐÌNH HOÀNG,Tuần 4-03-Tư duy phát triển (Growth Mindset) và kỹ năng phục hồi sau thất bại,T7-07
+156,25110168,TRƯƠNG QUANG LONG,Tuần 4-03-Tư duy phát triển (Growth Mindset) và kỹ năng phục hồi sau thất bại,T7-07
+157,25280089,VŨ THỊ QUỲNH NHƯ,Tuần 4-03-Tư duy phát triển (Growth Mindset) và kỹ năng phục hồi sau thất bại,T7-07
+158,25110226,MAI DUY PHÁT,Tuần 4-03-Tư duy phát triển (Growth Mindset) và kỹ năng phục hồi sau thất bại,T7-07
+159,25110177,NGUYỄN TẤN TRIỂN,Tuần 4-03-Tư duy phát triển (Growth Mindset) và kỹ năng phục hồi sau thất bại,T7-07
+160,25280052,ĐẶNG HUỲNH KHÁNH VY,Tuần 4-03-Tư duy phát triển (Growth Mindset) và kỹ năng phục hồi sau thất bại,T7-07
+161,25110152,NGUYỄN NGỌC DIỄM,Tuần 6-04-Sơ cứu tâm lý và quản lý áp lực đồng trang lứa,T7-08
+162,25110197,HỨA HOÀNG THÙY DƯƠNG,Tuần 6-04-Sơ cứu tâm lý và quản lý áp lực đồng trang lứa,T7-08
+163,25110154,ĐẶNG HỒNG DUYÊN,Tuần 6-04-Sơ cứu tâm lý và quản lý áp lực đồng trang lứa,T7-08
+164,25110196,VÕ TRỌNG ĐỨC,Tuần 6-04-Sơ cứu tâm lý và quản lý áp lực đồng trang lứa,T7-08
+165,25110206,NGUYỄN DUY MINH HUY,Tuần 6-04-Sơ cứu tâm lý và quản lý áp lực đồng trang lứa,T7-08
+166,25110217,NGUYỄN HOÀNG QUỐC LUẬT,Tuần 6-04-Sơ cứu tâm lý và quản lý áp lực đồng trang lứa,T7-08
+167,25110218,LÊ VÕ TRÚC MY,Tuần 6-04-Sơ cứu tâm lý và quản lý áp lực đồng trang lứa,T7-08
+168,25110224,LÊ TRẦN HOÀNG NHÂN,Tuần 6-04-Sơ cứu tâm lý và quản lý áp lực đồng trang lứa,T7-08
+169,25110230,NHAN QUANG PHƯỚC,Tuần 6-04-Sơ cứu tâm lý và quản lý áp lực đồng trang lứa,T7-08
+170,25110234,NGÔ TRUNG SƠN,Tuần 6-04-Sơ cứu tâm lý và quản lý áp lực đồng trang lứa,T7-08
+171,25110183,CHU ĐÌNH AN,Tuần 6-03-Văn hóa ứng xử và giao tiếp chuẩn mực trên không gian mạng ( Netiquette),T7-09
+172,25110151,PHẠM ĐÀO VĂN CHƯƠNG,Tuần 6-03-Văn hóa ứng xử và giao tiếp chuẩn mực trên không gian mạng ( Netiquette),T7-09
+173,25110158,NGUYỄN NGỌC HIỂN,Tuần 6-03-Văn hóa ứng xử và giao tiếp chuẩn mực trên không gian mạng ( Netiquette),T7-09
+174,25110163,ĐẶNG NGUYỄN GIA HUY,Tuần 6-03-Văn hóa ứng xử và giao tiếp chuẩn mực trên không gian mạng ( Netiquette),T7-09
+175,25110165,NGUYỄN QUANG NHẬT HY,Tuần 6-03-Văn hóa ứng xử và giao tiếp chuẩn mực trên không gian mạng ( Netiquette),T7-09
+176,25110166,LÊ ANH KHOA,Tuần 6-03-Văn hóa ứng xử và giao tiếp chuẩn mực trên không gian mạng ( Netiquette),T7-09
+177,25280047,HUỲNH TÚ TOÀN,Tuần 6-03-Văn hóa ứng xử và giao tiếp chuẩn mực trên không gian mạng ( Netiquette),T7-09
+178,24110201,LUYỆN TRẦN HÙNG,Tuần 6-03-Văn hóa ứng xử và giao tiếp chuẩn mực trên không gian mạng ( Netiquette),T7-09
+179,25110146,NGUYỄN THỊ THIÊN VĂN,Tuần 6-03-Văn hóa ứng xử và giao tiếp chuẩn mực trên không gian mạng ( Netiquette),T7-09
+180,25280057,VŨ THÀNH CÔNG,Tuần 4-02-Kỹ năng kiểm chứng thông tin (fact-checking) và nhận diện tin giả trong kỷ nguyên AI,T7-10
+181,25280098,NGUYỄN TRẦN NGỌC DIỆP,Tuần 4-02-Kỹ năng kiểm chứng thông tin (fact-checking) và nhận diện tin giả trong kỷ nguyên AI,T7-10
+182,25280100,ĐINH NGUYÊN HIẾU,Tuần 4-02-Kỹ năng kiểm chứng thông tin (fact-checking) và nhận diện tin giả trong kỷ nguyên AI,T7-10
+183,25110048,ĐẶNG NHẬT HUY,Tuần 4-02-Kỹ năng kiểm chứng thông tin (fact-checking) và nhận diện tin giả trong kỷ nguyên AI,T7-10
+184,25110056,HÀNG VŨ MINH KHANG,Tuần 4-02-Kỹ năng kiểm chứng thông tin (fact-checking) và nhận diện tin giả trong kỷ nguyên AI,T7-10
+185,25280108,MAI TUẤN KHANH,Tuần 4-02-Kỹ năng kiểm chứng thông tin (fact-checking) và nhận diện tin giả trong kỷ nguyên AI,T7-10
+186,25280067,HOÀNG CÔNG MINH,Tuần 4-02-Kỹ năng kiểm chứng thông tin (fact-checking) và nhận diện tin giả trong kỷ nguyên AI,T7-10
+187,25280069,NGUYỄN TRỌNG NGHĨA,Tuần 4-02-Kỹ năng kiểm chứng thông tin (fact-checking) và nhận diện tin giả trong kỷ nguyên AI,T7-10
+188,25280079,NGUYỄN HỮU VINH,Tuần 4-02-Kỹ năng kiểm chứng thông tin (fact-checking) và nhận diện tin giả trong kỷ nguyên AI,T7-10`;
 
-        // --- HÀM XỬ LÝ GIAO DIỆN ---
-        
-        function changeTest() {
-            const testId = document.getElementById('testSelect').value;
-            currentQuizData = allTests[testId];
+        // Các biến lưu trữ sau khi phân tích CSV
+        let classList = new Set();
+        let groupsByClass = {};
+        let studentsByGroup = {};
+        let topicByGroup = {};
+
+        function parseCSV() {
+            const lines = STUDENT_CSV_DATA.trim().split('\n');
             
-            // Xóa nội dung cũ
-            document.getElementById('mcqContainer').innerHTML = '';
-            document.getElementById('tfContainer').innerHTML = '';
-            document.getElementById('wordBank').innerHTML = '';
-            document.getElementById('dragDropContainer').innerHTML = '';
-            document.getElementById('shortAnswerContainer').innerHTML = '';
-
-            draggedItem = null;
-            initQuiz();
-        }
-
-        function initQuiz() {
-            renderMCQ();
-            renderTF();
-            renderDragDrop();
-            renderShortAnswer();
-        }
-
-        function renderMCQ() {
-            const container = document.getElementById('mcqContainer');
-            currentQuizData.mcq.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = "bg-white p-5 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition";
-                div.innerHTML = `
-                    <p class="font-bold text-gray-800 mb-3"><span class="text-blue-600">Câu ${index + 1}:</span> ${item.q}</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        ${item.options.map((opt, i) => `
-                            <label class="flex items-start p-3 border rounded cursor-pointer hover:bg-green-50 transition">
-                                <input type="radio" name="${item.id}" value="${i}" class="mt-1 mr-3 text-green-600 focus:ring-green-500">
-                                <span class="text-sm text-gray-700">${opt}</span>
-                            </label>
-                        `).join('')}
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function renderTF() {
-            const container = document.getElementById('tfContainer');
-            currentQuizData.tf.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = "bg-white p-5 rounded-lg shadow-sm border border-gray-100";
-                div.innerHTML = `
-                    <p class="font-bold text-gray-800 mb-3 text-sm"><span class="text-orange-600">Câu ${index + 1}:</span> ${item.q}</p>
-                    <div class="flex gap-6">
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="radio" name="${item.id}" value="true" class="text-green-600 focus:ring-green-500">
-                            <span class="font-bold text-green-700">Đúng</span>
-                        </label>
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="radio" name="${item.id}" value="false" class="text-red-600 focus:ring-red-500">
-                            <span class="font-bold text-red-700">Sai</span>
-                        </label>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function renderDragDrop() {
-            const wordBank = document.getElementById('wordBank');
-            const shuffledWords = [...currentQuizData.dragDrop.words].sort(() => Math.random() - 0.5);
-            
-            shuffledWords.forEach(word => {
-                const el = document.createElement('div');
-                el.className = 'draggable-item bg-purple-100 text-purple-800 px-4 py-2 rounded-full font-bold shadow-sm border border-purple-300 select-none';
-                el.draggable = true;
-                el.innerText = word;
-                el.id = 'word-' + word.replace(/\s+/g, '-');
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line || line.includes('(1),(2)')) continue; 
                 
-                el.addEventListener('dragstart', dragStart);
-                el.addEventListener('dragend', dragEnd);
-                el.addEventListener('touchstart', touchStart, {passive: false});
-                el.addEventListener('touchmove', touchMove, {passive: false});
-                el.addEventListener('touchend', touchEnd);
-                
-                wordBank.appendChild(el);
-            });
+                const cols = line.split(',');
+                if (cols.length >= 5) {
+                    const mssv = cols[1].trim();
+                    const hoten = cols[2].trim();
+                    const topic = cols[3].trim(); 
+                    const nhom = cols[4].trim(); 
+                    
+                    if (!nhom) continue;
 
-            const container = document.getElementById('dragDropContainer');
-            currentQuizData.dragDrop.sentences.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = "p-3 border-b border-gray-100 last:border-0";
-                const htmlText = item.text.replace('[]', `<span class="drop-zone" data-correct="${item.answer}" id="drop-${item.id}"></span>`);
-                div.innerHTML = `<span class="font-bold text-purple-600 mr-2">Câu ${index + 1}:</span> ${htmlText}`;
-                container.appendChild(div);
-            });
+                    const lop = nhom.split('-')[0]; 
 
-            document.querySelectorAll('.drop-zone').forEach(zone => {
-                zone.addEventListener('dragover', dragOver);
-                zone.addEventListener('dragenter', dragEnter);
-                zone.addEventListener('dragleave', dragLeave);
-                zone.addEventListener('drop', drop);
-            });
-        }
+                    classList.add(lop);
 
-        function renderShortAnswer() {
-            const container = document.getElementById('shortAnswerContainer');
-            currentQuizData.shortAns.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = "bg-white p-5 rounded-lg shadow-sm border border-gray-100";
-                div.innerHTML = `
-                    <p class="font-bold text-gray-800 mb-2"><span class="text-yellow-600">Câu ${index + 1}:</span> ${item.q}</p>
-                    <input type="text" id="${item.id}" class="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-yellow-500 outline-none text-sm" placeholder="Nhập câu trả lời...">
-                `;
-                container.appendChild(div);
-            });
-        }
+                    if (!groupsByClass[lop]) groupsByClass[lop] = new Set();
+                    groupsByClass[lop].add(nhom);
 
-        // --- XỬ LÝ KÉO THẢ (HỖ TRỢ MOBILE) ---
-        let draggedItem = null;
-        let touchItem = null;
-        let touchOffsetX = 0;
-        let touchOffsetY = 0;
+                    if (!studentsByGroup[nhom]) studentsByGroup[nhom] = [];
+                    studentsByGroup[nhom].push(`${mssv} - ${hoten}`);
 
-        function dragStart(e) {
-            draggedItem = this;
-            setTimeout(() => this.classList.add('dragging'), 0);
-        }
-        function dragEnd() {
-            this.classList.remove('dragging');
-            draggedItem = null;
-        }
-        function dragOver(e) { e.preventDefault(); }
-        function dragEnter(e) { e.preventDefault(); this.classList.add('over'); }
-        function dragLeave() { this.classList.remove('over'); }
-        
-        function drop(e) {
-            this.classList.remove('over');
-            if (draggedItem) {
-                if (this.innerText) {
-                    returnToBank(this.innerText);
+                    if (topic && !topicByGroup[nhom]) {
+                        topicByGroup[nhom] = topic;
+                    }
                 }
-                this.innerText = draggedItem.innerText;
-                this.dataset.val = draggedItem.innerText;
-                draggedItem.style.display = 'none';
+            }
+
+            const classSelect = document.getElementById('classSelect');
+            classSelect.innerHTML = '<option value="">-- Chọn Lớp --</option>';
+            Array.from(classList).sort().forEach(lop => {
+                const opt = document.createElement('option');
+                opt.value = lop;
+                opt.textContent = "Lớp " + lop;
+                classSelect.appendChild(opt);
+            });
+        }
+
+        function onClassChange() {
+            const lop = document.getElementById('classSelect').value;
+            const groupSelect = document.getElementById('groupSelect');
+            const studentSelect = document.getElementById('currentMemberName');
+            const groupNameInput = document.getElementById('groupName');
+            const topicInput = document.getElementById('topicName');
+
+            groupSelect.innerHTML = '<option value="">-- Chọn Nhóm --</option>';
+            studentSelect.innerHTML = '<option value="">-- Vui lòng chọn Nhóm ở trên trước --</option>';
+            groupNameInput.value = "";
+            topicInput.value = "";
+            studentSelect.disabled = true;
+            generateFinalText();
+
+            if (lop) {
+                groupSelect.disabled = false;
+                Array.from(groupsByClass[lop]).sort().forEach(nhom => {
+                    const opt = document.createElement('option');
+                    opt.value = nhom;
+                    opt.textContent = "Nhóm " + nhom;
+                    groupSelect.appendChild(opt);
+                });
+            } else {
+                groupSelect.disabled = true;
             }
         }
 
-        function touchStart(e) {
-            e.preventDefault();
-            touchItem = this;
-            const touch = e.touches[0];
-            const rect = this.getBoundingClientRect();
-            touchOffsetX = touch.clientX - rect.left;
-            touchOffsetY = touch.clientY - rect.top;
-            
-            this.style.position = 'fixed';
-            this.style.left = rect.left + 'px';
-            this.style.top = rect.top + 'px';
-            this.style.zIndex = 1000;
-            this.style.opacity = 0.8;
-        }
+        function onGroupChange() {
+            const nhom = document.getElementById('groupSelect').value;
+            const studentSelect = document.getElementById('currentMemberName');
+            const groupNameInput = document.getElementById('groupName');
+            const topicInput = document.getElementById('topicName');
 
-        function touchMove(e) {
-            e.preventDefault();
-            if (!touchItem) return;
-            const touch = e.touches[0];
-            touchItem.style.left = (touch.clientX - touchOffsetX) + 'px';
-            touchItem.style.top = (touch.clientY - touchOffsetY) + 'px';
-        }
+            studentSelect.innerHTML = '<option value="">-- Chọn Sinh viên đại diện báo cáo --</option>';
 
-        function touchEnd(e) {
-            if (!touchItem) return;
-            touchItem.style.opacity = 1;
-            touchItem.style.zIndex = '';
-            
-            const changedTouch = e.changedTouches[0];
-            const elemBelow = document.elementFromPoint(changedTouch.clientX, changedTouch.clientY);
-            const dropZone = elemBelow ? elemBelow.closest('.drop-zone') : null;
-
-            if (dropZone) {
-                if (dropZone.innerText) returnToBank(dropZone.innerText);
-                dropZone.innerText = touchItem.innerText;
-                dropZone.dataset.val = touchItem.innerText;
-                touchItem.style.display = 'none';
+            if (nhom) {
+                groupNameInput.value = "Nhóm " + nhom;
+                topicInput.value = topicByGroup[nhom] || ""; 
+                studentSelect.disabled = false;
+                
+                if(studentsByGroup[nhom]) {
+                    studentsByGroup[nhom].forEach(sv => {
+                        const opt = document.createElement('option');
+                        opt.value = sv.split(' - ')[1];
+                        opt.textContent = sv;
+                        studentSelect.appendChild(opt);
+                    });
+                }
+            } else {
+                groupNameInput.value = "";
+                studentSelect.innerHTML = '<option value="">-- Vui lòng chọn Nhóm ở trên trước --</option>';
+                studentSelect.disabled = true;
             }
-            
-            touchItem.style.position = '';
-            touchItem = null;
+            generateFinalText();
         }
 
-        function returnToBank(text) {
-            const id = 'word-' + text.replace(/\s+/g, '-');
-            const wordEl = document.getElementById(id);
-            if(wordEl) {
-                wordEl.style.display = 'inline-block';
-                wordEl.style.position = '';
+        // ==========================================
+        // DATA: ĐÁNH GIÁ NHÓM
+        // ==========================================
+        const groupCriteriaData = [
+            {
+                id: "c_thoigian", title: "1. Quản lý Thời gian", icon: "fa-clock",
+                options: [
+                    { id: "t1", type: "neutral", label: "Đúng thời gian", text: "Trình bày đúng thời gian quy định." },
+                    { id: "t2", type: "negative", label: "Trễ < 5 phút", text: "Trình bày lố thời gian dưới 5 phút." },
+                    { id: "t3", type: "negative", label: "Trễ khá dài", text: "Trình bày lố thời gian (gần 10 phút), cần cải thiện." },
+                    { id: "t7", type: "positive", label: "Chuẩn bị nhanh", text: "Chủ động chuẩn bị thiết bị nhanh chóng." },
+                    { id: "t9", type: "negative", label: "Thiếu thời gian", text: "Chưa trình bày hết nội dung đã hết giờ." },
+                    { id: "t12", type: "positive", label: "Kiểm soát nhịp độ", text: "Duy trì nhịp độ trình bày ổn định, vừa vặn." }
+                ]
+            },
+            {
+                id: "c_hinhthuc_bc", title: "2. Ấn tượng Hình thức / Slide", icon: "fa-book",
+                options: [
+                  { id: "ht01", type: "positive", label: "Slide/Báo cáo đẹp", text: "Slide thiết kế chuyên nghiệp, rõ ràng." },
+                  { id: "ht02", type: "neutral", label: "Trình bày cơ bản", text: "Hình thức ổn nhưng chưa có điểm nhấn đặc biệt." },
+                  { id: "ht03", type: "negative", label: "Sơ sài, nhiều chữ", text: "Trình bày sơ sài, nhồi nhét quá nhiều chữ lên Slide." },                
+                  { id: "ct01", type: "positive", label: "Cấu trúc rõ ràng", text: "Dẫn dắt các phần mạch lạc, dễ theo dõi." },
+                  { id: "ct03", type: "negative", label: "Rời rạc", text: "Cấu trúc lộn xộn, người nghe khó bắt kịp ý." }
+                ]
+            },
+            {
+                id: "c_noidung", title: "3. Nội dung & Tương tác lớp", icon: "fa-lightbulb",
+                options: [
+                    { id: "nd1", type: "positive", label: "Nội dung sâu sắc", text: "Phân tích nội dung rất hay và có chiều sâu." },
+                    { id: "nd6", type: "positive", label: "Sáng tạo", text: "Góc nhìn mới lạ, sáng tạo." },
+                    { id: "nd8", type: "positive", label: "Có ví dụ thực tế", text: "Nêu dẫn chứng thực tế rất dễ hiểu." },
+                    { id: "nd2", type: "positive", label: "Khuấy động lớp tốt", text: "Có tổ chức trò chơi, Kahoot/Quizizz kéo lớp tương tác." },
+                    { id: "nd5", type: "negative", label: "Thuyết trình 1 chiều", text: "Chỉ đứng nói, không tương tác hay đặt câu hỏi cho lớp." },
+                    { id: "nd7", type: "negative", label: "Lan man", text: "Nội dung bị lan man, không đúng trọng tâm." }
+                ]
             }
+        ];
+
+        // ==========================================
+        // DATA: ĐÁNH GIÁ CÁ NHÂN ĐẠI DIỆN
+        // ==========================================
+        const individualCriteriaData = [
+            {
+                id: "i_phongcach", title: "A. Phong cách trình bày", icon: "fa-user-tie",
+                options: [
+                    { id: "i_pc1", type: "positive", label: "Rất tự tin", text: "Rất tự tin, làm chủ sân khấu tốt." },
+                    { id: "i_pc3", type: "positive", label: "Tương tác mắt tốt", text: "Hay nhìn xuống và giao tiếp bằng ánh mắt với lớp." },
+                    { id: "i_pc6", type: "negative", label: "Còn rụt rè", text: "Phong thái còn rụt rè, run." },
+                    { id: "i_pc7", type: "negative", label: "Chỉ nhìn Slide/Giấy", text: "Lệ thuộc giấy hoặc quay lưng lại đọc Slide liên tục." }
+                ]
+            },
+            {
+                id: "i_giongnoi", title: "B. Giọng nói", icon: "fa-microphone",
+                options: [
+                    { id: "i_gn2", type: "positive", label: "Giọng to, rõ ràng", text: "Âm lượng to, rõ, truyền cảm." },
+                    { id: "i_gn4", type: "positive", label: "Nói trôi chảy", text: "Cách nói tự nhiên, trôi chảy không bị vấp." },
+                    { id: "i_gn6", type: "negative", label: "Vấp nhiều / À ừm", text: "Sử dụng quá nhiều từ đệm (à, ừm) hoặc vấp chữ." },
+                    { id: "i_gn8", type: "negative", label: "Nói quá nhỏ", text: "Giọng nói nhỏ, ngồi dưới nghe không rõ." },
+                    { id: "i_gn9", type: "negative", label: "Nói như học thuộc", text: "Giọng đọc đều đều như trả bài, buồn ngủ." }
+                ]
+            }
+        ];
+
+        let evaluatedMembers = [];
+
+        function switchTab(tabId) {
+            document.getElementById('groupTab').classList.add('hidden');
+            document.getElementById('individualTab').classList.add('hidden');
+            document.getElementById('btn-groupTab').classList.remove('active');
+            document.getElementById('btn-individualTab').classList.remove('active');
+
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById('btn-' + tabId).classList.add('active');
         }
 
-        // --- NỘP BÀI VÀ CHẤM ĐIỂM ---
+        function renderCriteria(containerId, dataArray, onchangeFunc) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
 
-        function submitQuiz() {
-            const name = document.getElementById('studentName').value.trim();
-            const className = document.getElementById('className').value.trim();
+            dataArray.forEach(group => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden';
+                
+                const header = document.createElement('div');
+                header.className = 'bg-gray-50 px-4 py-3 border-b border-gray-100 font-semibold text-gray-700 flex items-center gap-2';
+                header.innerHTML = `<i class="fas ${group.icon} text-blue-500 w-5 text-center"></i> ${group.title}`;
+                groupDiv.appendChild(header);
+
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = 'p-4 flex flex-wrap gap-2';
+
+                group.options.forEach(opt => {
+                    const colorClass = opt.type === 'positive' ? 'positive text-green-700 border-green-200 bg-green-50' : 
+                                       opt.type === 'negative' ? 'negative text-red-700 border-red-200 bg-red-50' : 
+                                       'neutral text-blue-700 border-blue-200 bg-blue-50';
+                    
+                    const iconClass = opt.type === 'positive' ? 'fa-check-circle' : 
+                                      opt.type === 'negative' ? 'fa-exclamation-circle' : 
+                                      'fa-info-circle';
+
+                    const lbl = document.createElement('label');
+                    lbl.className = 'check-pill cursor-pointer inline-block';
+                    lbl.innerHTML = `
+                        <input type="checkbox" class="hidden" data-type="${opt.type}" data-text="${opt.text}" onchange="${onchangeFunc}">
+                        <div class="${colorClass} border rounded-full px-3 py-1.5 text-sm font-medium transition-all hover:shadow-md flex items-center gap-1.5">
+                            <i class="fas ${iconClass} opacity-70"></i>
+                            ${opt.label}
+                        </div>
+                    `;
+                    optionsGrid.appendChild(lbl);
+                });
+
+                groupDiv.appendChild(optionsGrid);
+                container.appendChild(groupDiv);
+            });
+        }
+
+        function addIndividualComment() {
+            const nameInput = document.getElementById('currentMemberName');
+            const name = nameInput.value.trim();
             
-            if (!name || !className) {
-                alert("Vui lòng nhập Họ tên và Lớp trước khi nộp bài!");
-                window.scrollTo(0,0);
+            if (!name) {
+                alert("Vui lòng chọn tên Sinh viên đại diện báo cáo!");
+                nameInput.focus();
                 return;
             }
 
-            if (!confirm(`Nộp bài cho học sinh ${name} - Lớp ${className}?`)) return;
+            const checkboxes = document.querySelectorAll('#individualTab input[type="checkbox"]:checked');
+            if (checkboxes.length === 0) {
+                alert("Vui lòng tick chọn ít nhất 1 tiêu chí nhận xét cho sinh viên này!");
+                return;
+            }
 
-            let score = 0;
-            let totalQuestions = 0;
-
-            // 1. Chấm Trắc nghiệm (Mỗi câu 2 điểm)
-            currentQuizData.mcq.forEach(q => {
-                totalQuestions++;
-                const selected = document.querySelector(`input[name="${q.id}"]:checked`);
-                const val = selected ? parseInt(selected.value) : -1;
-                
-                // Highlight kết quả
-                const inputs = document.querySelectorAll(`input[name="${q.id}"]`);
-                inputs.forEach((input, idx) => {
-                    const parent = input.parentElement;
-                    if (idx === q.correct) parent.classList.add('bg-green-200', 'border-green-500');
-                    else if (input.checked && idx !== q.correct) parent.classList.add('bg-red-200', 'border-red-500');
-                });
-
-                if (val === q.correct) score += 2;
-            });
-
-            // 2. Chấm Đúng Sai (Mỗi câu 2 điểm)
-            currentQuizData.tf.forEach(q => {
-                totalQuestions++;
-                const selected = document.querySelector(`input[name="${q.id}"]:checked`);
-                const val = selected ? (selected.value === 'true') : null;
-                
-                // Highlight
-                const inputs = document.querySelectorAll(`input[name="${q.id}"]`);
-                if(selected) {
-                    if(val === q.correct) selected.parentElement.classList.add('bg-green-200', 'p-1', 'rounded');
-                    else selected.parentElement.classList.add('bg-red-200', 'p-1', 'rounded');
-                }
-
-                if (val === q.correct) score += 2;
-            });
-
-            // 3. Chấm Kéo thả (Mỗi câu 2.5 điểm)
-            document.querySelectorAll('.drop-zone').forEach(zone => {
-                totalQuestions++;
-                const userVal = zone.innerText.trim();
-                const correctVal = zone.dataset.correct;
-                if (userVal === correctVal) {
-                    score += 2.5;
-                    zone.style.backgroundColor = '#bbf7d0'; // Green
-                    zone.style.borderColor = '#166534';
-                } else {
-                    zone.style.backgroundColor = '#fecaca'; // Red
-                    zone.style.borderColor = '#b91c1c';
-                }
-            });
-
-            // 4. Chấm Trả lời ngắn (Mỗi câu 2.5 điểm - Tương đối)
-            currentQuizData.shortAns.forEach(q => {
-                totalQuestions++;
-                const input = document.getElementById(q.id);
-                const val = input.value.trim().toLowerCase().replace(/\s/g, ''); // Xóa khoảng trắng để so sánh
-                const answer = q.answer.toLowerCase().replace(/\s/g, '');
-                
-                if (val === answer) {
-                    score += 2.5;
-                    input.classList.add('border-green-500', 'bg-green-50');
-                } else {
-                    input.classList.add('border-red-500', 'bg-red-50');
-                    // Hiển thị đáp án đúng
-                    const hint = document.createElement('div');
-                    hint.className = "text-red-600 text-sm mt-1 font-bold";
-                    hint.innerText = `Đáp án đúng: ${q.answer}`;
-                    input.parentNode.appendChild(hint);
-                }
-            });
-
-            // Quy đổi về thang điểm 10
-            // Tổng điểm thô tối đa = (5*2) + (3*2) + (4*2.5) + (1*2.5) = 10 + 6 + 10 + 2.5 = 28.5 (Tuỳ đề)
-            // Để đơn giản, hiển thị điểm thô hoặc tính %
+            let traits = Array.from(checkboxes).map(cb => cb.getAttribute('data-text'));
             
-            // Tính lại max score của đề hiện tại
-            const maxScore = (currentQuizData.mcq.length * 2) + 
-                             (currentQuizData.tf.length * 2) + 
-                             (currentQuizData.dragDrop.sentences.length * 2.5) + 
-                             (currentQuizData.shortAns.length * 2.5);
-            
-            const finalScore10 = (score / maxScore) * 10;
+            if(traits.length > 0) {
+                traits[0] = traits[0].charAt(0).toUpperCase() + traits[0].slice(1);
+            }
 
-            alert(`KẾT QUẢ BÀI LÀM\n\nHọc sinh: ${name}\nĐiểm số: ${finalScore10.toFixed(1)} / 10`);
+            const finalString = `${traits.join(' ')}.`;
             
-            // Disable inputs
-            document.querySelectorAll('input, button, select, .draggable-item').forEach(el => el.disabled = true);
-            document.querySelectorAll('.draggable-item').forEach(el => el.draggable = false);
+            evaluatedMembers.push({ name: name, comment: finalString });
+
+            updateMemberListUI();
+            generateFinalText();
+
+            checkboxes.forEach(cb => cb.checked = false);
         }
 
-        function resetQuiz() {
-            if(confirm("Làm lại sẽ xóa hết các lựa chọn hiện tại. Bạn có chắc không?")) {
-                document.getElementById('quizForm').reset();
-                document.querySelectorAll('.drop-zone').forEach(z => {
-                    if(z.innerText) returnToBank(z.innerText);
-                    z.innerText = '';
-                    z.style.backgroundColor = '';
-                    z.style.borderColor = '';
-                });
-                // Xóa highlight đáp án sai ở phần trả lời ngắn
-                document.querySelectorAll('#shortAnswerContainer div.text-red-600').forEach(e => e.remove());
-                document.querySelectorAll('#shortAnswerContainer input').forEach(e => e.classList.remove('border-green-500', 'bg-green-50', 'border-red-500', 'bg-red-50'));
+        function removeMember(index) {
+            evaluatedMembers.splice(index, 1);
+            updateMemberListUI();
+            generateFinalText();
+        }
 
-                changeTest(); // Re-render
-                window.scrollTo(0,0);
+        function updateMemberListUI() {
+            const list = document.getElementById('memberList');
+            list.innerHTML = '';
+            if (evaluatedMembers.length === 0) {
+                list.innerHTML = '<li class="italic text-gray-400">Chưa có đánh giá cá nhân nào...</li>';
+                return;
+            }
+
+            evaluatedMembers.forEach((member, index) => {
+                const li = document.createElement('li');
+                li.className = "flex justify-between items-start bg-gray-50 p-2 rounded border border-gray-200";
+                li.innerHTML = `
+                    <div>
+                        <span class="font-bold text-blue-700">${member.name}:</span> 
+                        <span>${member.comment}</span>
+                    </div>
+                    <button onclick="removeMember(${index})" class="text-red-500 hover:text-red-700 ml-2" title="Xóa">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function generateFinalText() {
+            const groupCheckboxes = document.querySelectorAll('#groupTab input[type="checkbox"]:checked');
+            let positives = [];
+            let negatives = [];
+
+            groupCheckboxes.forEach(cb => {
+                const type = cb.getAttribute('data-type');
+                const text = cb.getAttribute('data-text');
+                if (type === 'positive') positives.push(text);
+                else if (type === 'negative') negatives.push(text);
+            });
+
+            const groupName = document.getElementById('groupName').value || "[Chưa chọn nhóm]";
+            let result = `--- ĐÁNH GIÁ CHÉO: ${groupName.toUpperCase()} ---\n\n`;
+
+            if (positives.length > 0 || negatives.length > 0) {
+                result += `* ĐÁNH GIÁ TOÀN NHÓM:\n`;
+                if (positives.length > 0) result += ` - Điểm mạnh: ${positives.join(', ')}\n`;
+                if (negatives.length > 0) result += ` - Góp ý: ${negatives.join(', ')}\n`;
+            }
+            
+            if (evaluatedMembers.length > 0) {
+                result += `\n* NHẬN XÉT ĐẠI DIỆN BÁO CÁO:\n`;
+                evaluatedMembers.forEach(mem => {
+                    result += ` - ${mem.name.toUpperCase()}: ${mem.comment}\n`;
+                });
+            }
+
+            document.getElementById('finalComment').value = result;
+        }
+
+        function resetAll() {
+            if(confirm("Bạn đã chắc chắn muốn làm mới để đánh giá nhóm khác?")) {
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.getElementById('classSelect').value = '';
+                document.getElementById('groupSelect').value = '';
+                document.getElementById('groupSelect').disabled = true;
+                document.getElementById('groupName').value = '';
+                document.getElementById('topicName').value = '';
+                document.getElementById('scoreInput').value = '';
+                document.getElementById('questionInput').value = '';
+                
+                const studentSelect = document.getElementById('currentMemberName');
+                studentSelect.innerHTML = '<option value="">-- Vui lòng chọn Nhóm ở trên trước --</option>';
+                studentSelect.disabled = true;
+
+                evaluatedMembers = [];
+                updateMemberListUI();
+                generateFinalText();
             }
         }
 
-        function startTimer() {
-            let duration = 45 * 60; 
-            const display = document.getElementById('timer');
-            const timer = setInterval(() => {
-                const minutes = Math.floor(duration / 60);
-                const seconds = duration % 60;
-                display.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-                if (--duration < 0) {
-                    clearInterval(timer);
-                    alert("Hết giờ làm bài!");
-                    submitQuiz();
+        async function submitToSheet() {
+            const apiUrl = GOOGLE_SCRIPT_URL;
+            const evaluatorName = document.getElementById('evaluatorName').value.trim();
+            const groupName = document.getElementById('groupName').value;
+            const topic = document.getElementById('topicName').value;
+            const score = document.getElementById('scoreInput').value;
+            const question = document.getElementById('questionInput').value;
+            const finalComment = document.getElementById('finalComment').value;
+
+            if (!apiUrl || apiUrl === "DÁN_LINK_WEB_APP_CỦA_BẠN_VÀO_ĐÂY") {
+                alert("Lỗi: Chưa cấu hình GOOGLE_SCRIPT_URL.");
+                return;
+            }
+            if (!evaluatorName) {
+                alert("Vui lòng nhập Họ tên / MSSV của bạn (Người đánh giá)!");
+                document.getElementById('evaluatorName').focus();
+                return;
+            }
+            if (!groupName) {
+                alert("Vui lòng chọn Lớp & Nhóm đang báo cáo!");
+                document.getElementById('classSelect').focus();
+                return;
+            }
+            if (!score) {
+                alert("Bạn chưa nhập Điểm số cho nhóm!");
+                document.getElementById('scoreInput').focus();
+                return;
+            }
+
+            const btn = document.getElementById('btnSubmit');
+            const statusLabel = document.getElementById('submitStatus');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi dữ liệu...';
+            btn.disabled = true;
+            statusLabel.className = "text-xs text-center mt-2 text-blue-600 block";
+            statusLabel.innerText = "Đang kết nối tới Google Sheet...";
+
+            // Phân tách mảng Ưu / Khuyết điểm
+            const checkboxes = document.querySelectorAll('#groupTab input[type="checkbox"]:checked');
+            let dsUuDiem = [];
+            let dsKhuyetDiem = [];
+            checkboxes.forEach(cb => {
+                if(cb.getAttribute('data-type') === 'positive') dsUuDiem.push(cb.nextElementSibling.innerText.trim());
+                if(cb.getAttribute('data-type') === 'negative') dsKhuyetDiem.push(cb.nextElementSibling.innerText.trim());
+            });
+
+            // Sử dụng CASE 5 (save_form_knlvn) trong GS của bạn để chèn cột tự động
+            const payload = {
+                action: "save_form_knlvn",
+                role: topic || "Báo cáo KNLVN - Sinh viên đánh giá",
+                evaluator: evaluatorName,
+                groupName: groupName,
+                week: "Báo cáo cuối kỳ",
+                // Chèn thêm Header vào GS
+                headers: ["Điểm số", "Câu hỏi phản biện", "Danh sách Ưu điểm (Đánh giá chéo)", "Danh sách Khuyết điểm (Đánh giá chéo)", "Nhận xét Tổng hợp"],
+                scores: [score, question, dsUuDiem.join(", "), dsKhuyetDiem.join(", "), finalComment]
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8", 
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                
+                if (result.result === "success") {
+                    statusLabel.className = "text-xs text-center mt-2 text-green-600 font-bold block";
+                    statusLabel.innerText = "✅ Đã nộp phiếu đánh giá thành công!";
+                    setTimeout(() => statusLabel.classList.add("hidden"), 5000);
+                } else {
+                    throw new Error(result.error || "Lỗi không xác định từ Server");
                 }
-            }, 1000);
+            } catch (error) {
+                statusLabel.className = "text-xs text-center mt-2 text-red-600 font-bold block";
+                statusLabel.innerText = "❌ Lỗi: " + error.message;
+            } finally {
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> GỬI KẾT QUẢ ĐÁNH GIÁ';
+                btn.disabled = false;
+            }
         }
 
         window.onload = () => {
-            initQuiz();
-            startTimer();
+            parseCSV();
+            renderCriteria('criteriaContainer', groupCriteriaData, 'generateFinalText()');
+            renderCriteria('individualCriteriaContainer', individualCriteriaData, '');
         };
-
     </script>
 </body>
-</html
+</html>
